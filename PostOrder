@@ -1,0 +1,82 @@
+#ifndef __POST_ORDER_H__
+#define __POST_ORDER_H__
+#include "InicioPila.h"
+#include "Cola.h"
+
+class PostOrder{
+  private:
+  string operacion;
+  Nodo *Post;
+  NodoC *List;
+  public:
+  PostOrder();
+  void convertirToPost(Nodo *&, string);  
+  int jerarquia(char);
+};
+PostOrder:: PostOrder(){}
+
+void PostOrder :: convertirToPost(Nodo *&Salida, string operacion)
+{
+  Post = Salida; 
+  Nodo *Aux = NULL;
+  for(int i=0; i<operacion.size(); i++){
+    char caracter = operacion[i] ;
+    switch(caracter)
+    {
+      case '(':
+        push(Aux, caracter," "); 
+        break;
+      case '^':
+      case '*':
+      case '/':
+      case '+':
+      case '-':
+        while(jerarquia(caracter)<= jerarquia(nextP(Aux))){
+            char n = nextP(Aux);
+            pop(Aux);
+            push(Salida, n, "Operador");
+        }
+        push(Aux, caracter, "");
+  
+        break;
+      case ')':
+        while(jerarquia(nextP(Aux))!= 1){
+          push(Salida, nextP(Aux), "");
+          pop(Aux);
+        }
+        pop(Aux);
+        break;
+      default:push(Salida, caracter, "Operando");
+    }
+    
+    
+  }
+  while(Aux!=NULL){
+      push(Salida, nextP(Aux),"Operador");
+      pop(Aux);
+  }
+  
+}
+
+int PostOrder :: jerarquia(char n){
+  int j = 0;
+  //Convertir el char a string
+  string ob;
+  ob+=n;
+  //Comparación
+  if(ob == "^"){
+    j = 4;
+  }else if(ob == "*" || ob == "/"){
+    j = 3;
+  }else if(ob =="+" || ob =="-"){
+    j = 2;
+  }else if(ob == "("){
+    j = 1;
+  }else if(ob =="%"){
+    j = 0;
+  }
+  return j;
+
+
+}
+#endif
